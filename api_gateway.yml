@@ -1,0 +1,190 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Api gateway
+  description: Ruby
+  contact:
+    name: Jesús Alejandro Noguera Ballén
+    email: janoguerab@unal.edu.co
+  license:
+    name: Software Architecture 2017-II
+host: '192.168.99.101:4000'
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /buy:
+    post:
+      summary: Creates a new buy
+      operationId: createBuy
+      parameters:
+        - name: buy
+          in: body
+          required: true
+          description: Buy Object
+          schema:
+            $ref: '#/definitions/Buy'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    get:
+      summary: Returns all buys
+      operationId: getAllBuys
+      parameters:
+        - name: firstResult
+          in: query
+          description: The first result to return
+          required: false
+          type: integer
+        - name: maxResult
+          in: query
+          description: The maximum number of results to return
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/BuysList'
+        '406':
+          description: Not Acceptable (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  '/buys/{id}':
+    get:
+      summary: Returns a buy with the given id
+      operationId: getBuyById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the buy to be returned
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/Buy'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '406':
+          description: Not Acceptable (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    put:
+      summary: Updates a buy with the given id
+      operationId: updateBuy
+      parameters:
+        - name: id
+          in: path
+          description: The id of the buy to be updated
+          required: true
+          type: integer
+        - name: buy
+          in: body
+          required: true
+          description: Buy Object
+          schema:
+            $ref: '#/definitions/BuyWithoutId'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '406':
+          description: Not Acceptable (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    delete:
+      summary: Deletes a buy with the given id
+      operationId: deleteBuy
+      parameters:
+        - name: id
+          in: path
+          description: The id of the buy to be deleted
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Ok
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '406':
+          description: Not Acceptable (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+definitions:
+  Buy:
+    type: object
+    properties:
+      id:
+        type: integer
+      product_id:
+        type: integer
+      user_id:
+        type: integer
+  BuyWithoutId:
+    type: object
+    properties:
+      product_id:
+        type: integer
+      user_id:
+        type: integer
+  BuysList:
+    type: object
+    required:
+      - total
+      - list
+    properties:
+      total:
+        type: number
+      list:
+        type: array
+        items:
+          $ref: '#/definitions/Buy'
+  ErrorModel:
+    type: object
+    required:
+      - message
+      - code
+    properties:
+      message:
+        type: string
+      code:
+        type: number
+      description:
+        type: object
